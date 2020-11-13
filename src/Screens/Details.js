@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
-import { Text, View, SafeAreaView, FlatList, TouchableOpacity, Dimensions, Image, ScrollView,ActivityIndicator } from 'react-native'
+import { Text, View, SafeAreaView, FlatList, TouchableOpacity, Dimensions, Image, ScrollView, ActivityIndicator } from 'react-native'
 import Header from '../Components/Header'
 import { Get_Image, Send_Details } from '../Utils/Config'
 import Axios from "axios"
 const { height, width } = Dimensions.get('window')
 import { Input } from 'react-native-elements';
 import { globalPostApi } from '../Utils/Service'
+import RNFetchBlob from 'rn-fetch-blob'
+let imagePath = null
 export default class Details extends Component {
     constructor(props) {
         super(props)
@@ -15,17 +17,52 @@ export default class Details extends Component {
             fName: '',
             lName: '',
             email: '',
-            phone: ''
+            phone: '',
+            imgObj:null
         }
     }
 
 
-    componentDidMount() {
+    async componentDidMount() {
         console.log('this.props.route.params', this.props.route.params.image)
         if (this.props && this.props.route && this.props.route.params) {
             this.setState({ img: this.props.route.params.image })
+            await RNFetchBlob
+            .config({
+                fileCache: true,
+                // by adding this option, the temp files will have a file extension
+                appendExt: 'png'
+            })
+            .fetch('GET', this.props.route.params.image, {
+                //some headers ..
+            })
+            .then((res) => {
+                // the temp file path with file extension `png`
+                let part=res.path().indexOf("files")
+                let url=res.path().slice(part)
+                console.log('The file saved to ',res, res.path(),part,res.path().slice(part), RNFetchBlob.wrap(res.path()))
+                imagePath = res.path()
+                // uri:res.path(),
+
+                let photo={
+                    filename: 'file.jpeg',
+                    uri: 'file://' +res.path(),
+                    type:'image/jpeg',
+                    name:'image'
+                }
+                this.setState({imgObj:photo})
+                return res.readFile("base64")
+
+            })
+            .then((res) => {
+                // the temp file path with file extension `png`
+                console.log('base ', res)
+            })
+
         }
-    }
+
+}
+
 
     handleSubmit = () => {
         const { fName, lName, email, phone } = this.state
@@ -54,29 +91,21 @@ export default class Details extends Component {
         }
 
         else {
-            this.handleSubmitDetail()
+            this.SubmitData()
         }
 
     }
 
-
-
-    handleSubmitDetail() {
-        const { fName, lName, email, phone } = this.state
-
-    }
-
-
     async SubmitData() {
         this.setState({ loading: true })
-        const { fName, lName, email, phone } = this.state
+        const { fName, lName, email, phone,imgObj,img } = this.state
         let formData = new FormData();
         formData.append('first_name', fName);
         formData.append('last_name', lName);
         formData.append('email', email);
         formData.append('phone', phone);
-        formData.append('user_image', email);
-         
+        formData.append('user_image', imgObj);
+
         await globalPostApi(Send_Details, formData)
             .then(response => {
                 this.setState({ loading: false })
@@ -84,6 +113,9 @@ export default class Details extends Component {
                 if (response && response.status == "success") {
                     this.props.navigation.navigate("Home")
                     alert(response.message)
+                }else{
+                    alert(response.message)
+
                 }
             })
             .catch(error => {
@@ -95,7 +127,7 @@ export default class Details extends Component {
 
 
     render() {
-        const { img,loading } = this.state
+        const { img, loading } = this.state
         if (loading) {
             return (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

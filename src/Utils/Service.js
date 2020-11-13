@@ -7,7 +7,10 @@ let authOptions={
     method:"POST",
     url:Url,
     data:formData,
-
+    headers: {
+        "Accept": 'application/json',
+        'Content-Type': 'multipart/form-data'
+      },
 }
 console.log("authOptions",authOptions);
 
