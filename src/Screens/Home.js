@@ -1,10 +1,13 @@
 import React, { Component } from 'react'
-import { Text, View, SafeAreaView,FlatList,TouchableOpacity,Dimensions } from 'react-native'
+import { Text, View, SafeAreaView, FlatList, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native'
 import Header from '../Components/Header'
 import { Get_Image } from '../Utils/Config'
 import Axios from "axios"
-const {height,width}=Dimensions.get('window')
-
+const { height, width } = Dimensions.get('window')
+import Image from 'react-native-scalable-image';
+import { globalPostApi } from '../Utils/Service'
+let data = ["a", "1", "3", "4", "5"]
+let url12 = "https://www.zamzar.com/images/filetypes/jpg.png"
 export default class Home extends Component {
     constructor(props) {
         super(props)
@@ -14,15 +17,16 @@ export default class Home extends Component {
             userId: "108",
             offset: 0,
             type: "popular",
-            
+            ImageData: []
+
         }
     }
 
     componentDidMount() {
-        // this.getImageData()
+        this.getImageData()
     }
 
-    getImageData() {
+    async getImageData() {
         this.setState({ loading: true })
         const { userId, offset, type } = this.state
         let formData = new FormData();
@@ -30,17 +34,13 @@ export default class Home extends Component {
         formData.append('offset', offset);
         formData.append('type', type);
 
-        fetch(Get_Image, {
-            method: 'POST', // or 'PUT'
-            body: formData, // data can be `string` or {object}!
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
+        await globalPostApi(Get_Image, formData)
             .then(response => {
                 this.setState({ loading: false })
-
                 console.log('Success:', response)
+                if (response && response.status == "success" && response.images && response.images != "") {
+                    this.setState({ ImageData: [...this.state.ImageData, ...response.images] })
+                }
             })
             .catch(error => {
                 this.setState({ loading: false })
@@ -48,30 +48,67 @@ export default class Home extends Component {
             });
     }
 
-renderItem=({item,index})=>{
-return(
-    <TouchableOpacity style={{height:height/10,width:width,backgroundColor:'pink',marginTop:height/80}}>
- 
-    </TouchableOpacity>
-)
-}
+   async handleLoadMore() {
+        const { offset } = this.state
+    await this.setState({offset: offset+1, })
+    this.getImageData()
+
+    }
+    gotoNextScreen(item) {
+        this.props.navigation.navigate("Details", { image: url12 })
+    }
+
+    renderItem = ({ item, index }) => {
+        const { ImageData } = this.state
+
+        return (
+            <View>
+                <TouchableOpacity
+                    onPress={() => this.gotoNextScreen(item)}
+                    style={{ width: width, marginBottom: height / 80, marginTop: index == 0 ? height / 80 : 0 }}>
+                    <Image
+                        width={width - (width / 40)} // height will be calculated automatically
+                        source={{ uri: item.xt_image }}
+                    />
+                </TouchableOpacity>
+                {ImageData.length > 0 && ((ImageData.length - 1) == index) ?
+                    <TouchableOpacity
+                        onPress={() => this.handleLoadMore()}
+                        style={{ height: height / 15, width: width, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1 }}>
+                        <Text style={{ fontWeight: '700', fontSize: height / 40 }}>Load More</Text>
+                    </TouchableOpacity>
+                    : null
+                }
+
+            </View>
+        )
+    }
 
     render() {
-        let data=["a","1","3","4","5"]
+        const { ImageData, loading } = this.state
+        console.log("ImageData",ImageData);
+        if (loading) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size={"large"} color={"blue"} />
+
+                </View>
+            )
+        }
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
                 <View style={{ flex: 1, }}>
                     <Header title={"Home"} />
                 </View>
-                <View style={{ flex: 8,justifyContent:'center',alignItems:'center' }}>
-                  <View style={{width:'90%',flex:1}}>
-                  <FlatList
-                  data={data}
-                  renderItem={this.renderItem}
-                  />
-                  </View>
+                <View style={{ flex: 8, justifyContent: 'center', alignItems: 'center' }}>
+                    <View style={{ width: '98%', flex: 1 }}>
+                        <FlatList
+                            data={ImageData}
+                            renderItem={this.renderItem}
+                            keyExtractor={(item, index) => index.toString()}
+                        />
+                    </View>
                 </View>
-
             </SafeAreaView>
         )
     }
