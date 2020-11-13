@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import { Text, View, SafeAreaView, FlatList, TouchableOpacity, Dimensions, Image, ScrollView } from 'react-native'
+import { Text, View, SafeAreaView, FlatList, TouchableOpacity, Dimensions, Image, ScrollView,ActivityIndicator } from 'react-native'
 import Header from '../Components/Header'
-import { Get_Image } from '../Utils/Config'
+import { Get_Image, Send_Details } from '../Utils/Config'
 import Axios from "axios"
 const { height, width } = Dimensions.get('window')
 import { Input } from 'react-native-elements';
+import { globalPostApi } from '../Utils/Service'
 export default class Details extends Component {
     constructor(props) {
         super(props)
@@ -65,8 +66,45 @@ export default class Details extends Component {
 
     }
 
+
+    async SubmitData() {
+        this.setState({ loading: true })
+        const { fName, lName, email, phone } = this.state
+        let formData = new FormData();
+        formData.append('first_name', fName);
+        formData.append('last_name', lName);
+        formData.append('email', email);
+        formData.append('phone', phone);
+        formData.append('user_image', email);
+         
+        await globalPostApi(Send_Details, formData)
+            .then(response => {
+                this.setState({ loading: false })
+                console.log('Success:', response)
+                if (response && response.status == "success") {
+                    this.props.navigation.navigate("Home")
+                    alert(response.message)
+                }
+            })
+            .catch(error => {
+                this.setState({ loading: false })
+                console.error('Error:', error)
+            });
+    }
+
+
+
     render() {
-        const { img } = this.state
+        const { img,loading } = this.state
+        if (loading) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size={"large"} color={"blue"} />
+
+                </View>
+            )
+        }
+
         return (
             <SafeAreaView style={{ flex: 1 }}>
                 <View style={{ flex: 3, }}>

@@ -48,14 +48,14 @@ export default class Home extends Component {
             });
     }
 
-   async handleLoadMore() {
+    async handleLoadMore() {
         const { offset } = this.state
-    await this.setState({offset: offset+1, })
-    this.getImageData()
+        await this.setState({ offset: offset + 1, })
+        this.getImageData()
 
     }
     gotoNextScreen(item) {
-        this.props.navigation.navigate("Details", { image: url12 })
+        this.props.navigation.navigate("Details", { image: item.xt_image })
     }
 
     renderItem = ({ item, index }) => {
@@ -86,7 +86,7 @@ export default class Home extends Component {
 
     render() {
         const { ImageData, loading } = this.state
-        console.log("ImageData",ImageData);
+        console.log("ImageData", ImageData);
         if (loading) {
             return (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -102,11 +102,14 @@ export default class Home extends Component {
                 </View>
                 <View style={{ flex: 8, justifyContent: 'center', alignItems: 'center' }}>
                     <View style={{ width: '98%', flex: 1 }}>
-                        <FlatList
-                            data={ImageData}
-                            renderItem={this.renderItem}
-                            keyExtractor={(item, index) => index.toString()}
-                        />
+                        {ImageData && ImageData.length > 0 ?
+                            <FlatList
+                            showsVerticalScrollIndicator={false}
+                                data={ImageData}
+                                renderItem={this.renderItem}
+                                keyExtractor={(item, index) => index.toString()}
+                            /> : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>No Data Found</Text></View>
+                        }
                     </View>
                 </View>
             </SafeAreaView>
