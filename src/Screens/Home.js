@@ -2,12 +2,9 @@ import React, { Component } from 'react'
 import { Text, View, SafeAreaView, FlatList, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native'
 import Header from '../Components/Header'
 import { Get_Image } from '../Utils/Config'
-import Axios from "axios"
 const { height, width } = Dimensions.get('window')
 import Image from 'react-native-scalable-image';
 import { globalPostApi } from '../Utils/Service'
-let data = ["a", "1", "3", "4", "5"]
-let url12 = "https://www.zamzar.com/images/filetypes/jpg.png"
 export default class Home extends Component {
     constructor(props) {
         super(props)

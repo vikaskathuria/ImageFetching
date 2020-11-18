@@ -30,20 +30,15 @@ export default class Details extends Component {
             await RNFetchBlob
             .config({
                 fileCache: true,
-                // by adding this option, the temp files will have a file extension
                 appendExt: 'png'
             })
             .fetch('GET', this.props.route.params.image, {
-                //some headers ..
             })
             .then((res) => {
-                // the temp file path with file extension `png`
                 let part=res.path().indexOf("files")
                 let url=res.path().slice(part)
                 console.log('The file saved to ',res, res.path(),part,res.path().slice(part), RNFetchBlob.wrap(res.path()))
                 imagePath = res.path()
-                // uri:res.path(),
-
                 let photo={
                     filename: 'file.jpeg',
                     uri: 'file://' +res.path(),
@@ -52,10 +47,8 @@ export default class Details extends Component {
                 }
                 this.setState({imgObj:photo})
                 return res.readFile("base64")
-
             })
             .then((res) => {
-                // the temp file path with file extension `png`
                 console.log('base ', res)
             })
 
