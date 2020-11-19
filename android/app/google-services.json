@@ -1,0 +1,106 @@
+{
+  "project_info": {
+    "project_number": "546059446456",
+    "firebase_url": "https://clubfactory-6e82f.firebaseio.com",
+    "project_id": "clubfactory-6e82f",
+    "storage_bucket": "clubfactory-6e82f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546059446456:android:77953d957d6bacb56aec4d",
+        "android_client_info": {
+          "package_name": "com.firebasedemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "546059446456-vcnq1fmrf5im7luv10vabbap5kbqkdjp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoMY2dpJRg9zzQc1fc-ThvPNtu_AIR4R8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "546059446456-vcnq1fmrf5im7luv10vabbap5kbqkdjp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546059446456:android:8984b84a89de46ca6aec4d",
+        "android_client_info": {
+          "package_name": "com.imagefetching"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "546059446456-vcnq1fmrf5im7luv10vabbap5kbqkdjp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoMY2dpJRg9zzQc1fc-ThvPNtu_AIR4R8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "546059446456-vcnq1fmrf5im7luv10vabbap5kbqkdjp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546059446456:android:3976852f8423cb846aec4d",
+        "android_client_info": {
+          "package_name": "com.intigration"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "546059446456-cda5cpf0tal3q431kk2gjfud91m3tjh6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.intigration",
+            "certificate_hash": "1222915ba7957ce3abd04b639b610a1ac47db4a5"
+          }
+        },
+        {
+          "client_id": "546059446456-vcnq1fmrf5im7luv10vabbap5kbqkdjp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoMY2dpJRg9zzQc1fc-ThvPNtu_AIR4R8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "546059446456-vcnq1fmrf5im7luv10vabbap5kbqkdjp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
