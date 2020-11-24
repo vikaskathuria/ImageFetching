@@ -1,114 +1,147 @@
 import React, { Component } from 'react'
-import { Text, View, SafeAreaView, FlatList, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native'
+import { Text, View, SafeAreaView, FlatList, Dimensions, ImageBackground, TouchableOpacity } from 'react-native'
 import Header from '../Components/Header'
-import { Get_Image } from '../Utils/Config'
-const { height, width } = Dimensions.get('window')
-import Image from 'react-native-scalable-image';
-import { globalPostApi } from '../Utils/Service'
+const { width, height } = Dimensions.get("window");
+
+export const MinMargin = width / 40;
+export const Margin = width / 20;
+import { CheckBox } from 'react-native-elements';
+let TableData=[]
 export default class Home extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            loading: false,
-            userId: "108",
-            offset: 0,
-            type: "popular",
-            ImageData: []
+            Tables: [
+                { table: "Table one", size: "Big", img: require("../images/big.jpg") },
+                { table: "Table Two", size: "Big", img: require("../images/big.jpg") },
+                { table: "Table three", size: "Big", img: require("../images/big.jpg") },
+                { table: "Table four", size: "Big", img: require("../images/big.jpg") },
+                { table: "Table five", size: "Small", img: require("../images/small.jpg") },
+                { table: "Table six", size: "Small", img: require("../images/small.jpg") },
+                { table: "Table seven", size: "Small", img: require("../images/small.jpg") },
+                { table: "Table eight", size: "Small", img: require("../images/small.jpg") },
 
+            ],
+            timeArr: [
+                { startTime: "10:00am", endTime: "12:00pm" },
+                { startTime: "1:00pm", endTime: '3:00pm' },
+                { startTime: "3:00pm", endTime: '5:00pm' },
+                { startTime: "5:00pm", endTime: "7:00pm" },
+                { startTime: "7:00pm", endTime: "9:00pm" },
+
+            ],
+            tableSize: [
+                { size: "Big" },
+                { size: "Small" }
+
+            ],
+            checked1: false,
+            checked2: false,
         }
     }
 
-    componentDidMount() {
-        this.getImageData()
-    }
 
-    async getImageData() {
-        this.setState({ loading: true })
-        const { userId, offset, type } = this.state
-        let formData = new FormData();
-        formData.append('user_id', userId);
-        formData.append('offset', offset);
-        formData.append('type', type);
+    onPressRadio = (type) => {
+        if (type=="one") {
+            this.setState({ checked1: !this.state.checked1,})
 
-        await globalPostApi(Get_Image, formData)
-            .then(response => {
-                this.setState({ loading: false })
-                console.log('Success:', response)
-                if (response && response.status == "success" && response.images && response.images != "") {
-                    this.setState({ ImageData: [...this.state.ImageData, ...response.images] })
-                }
-            })
-            .catch(error => {
-                this.setState({ loading: false })
-                console.error('Error:', error)
-            });
-    }
+        } else {
+            this.setState({  checked2: !this.state.checked2 })
 
-    async handleLoadMore() {
-        const { offset } = this.state
-        await this.setState({ offset: offset + 1, })
-        this.getImageData()
+        }
 
     }
-    gotoNextScreen(item) {
-        this.props.navigation.navigate("Details", { image: item.xt_image })
+
+
+
+    handleButtonPress(item){
+     this.props.navigation.navigate("Details")
     }
+
 
     renderItem = ({ item, index }) => {
-        const { ImageData } = this.state
-
         return (
-            <View>
-                <TouchableOpacity
-                    onPress={() => this.gotoNextScreen(item)}
-                    style={{ width: width, marginBottom: height / 80, marginTop: index == 0 ? height / 80 : 0 }}>
-                    <Image
-                        width={width - (width / 40)} // height will be calculated automatically
-                        source={{ uri: item.xt_image }}
-                    />
-                </TouchableOpacity>
-                {ImageData.length > 0 && ((ImageData.length - 1) == index) ?
-                    <TouchableOpacity
-                        onPress={() => this.handleLoadMore()}
-                        style={{ height: height / 15, width: width, justifyContent: 'center', alignItems: 'center', borderTopWidth: 1 }}>
-                        <Text style={{ fontWeight: '700', fontSize: height / 40 }}>Load More</Text>
-                    </TouchableOpacity>
-                    : null
-                }
+            <TouchableOpacity
+                onPress={() => this.handleButtonPress(item)}
+                style={{ backgroundColor: "#fff", paddingVertical: MinMargin / 2, width: width / 2, paddingLeft: index % 2 == 0 ? MinMargin / 2 : MinMargin }}>
+                <ImageBackground
+                    source={item.img} style={{ width: (width - (MinMargin * 3)) / 2, height: (width - (MinMargin * 3)) / 2, }} resizeMode="cover">
+                    <View style={{ padding: MinMargin, flex: 1, justifyContent: 'space-evenly' }}>
+                        <View style={{ alignItems: 'center' }}>
+                            <Text style={{ fontSize: height / 45, color: "#fff", textAlign: 'center' }}>{item.size}</Text>
+                            <Text style={{ fontSize: height / 45, color: "#fff", textAlign: 'center' }}>Table No:{index + 1}</Text>
+                        </View>
+                    </View>
+                </ImageBackground>
+            </TouchableOpacity>
 
-            </View>
         )
     }
 
-    render() {
-        const { ImageData, loading } = this.state
-        console.log("ImageData", ImageData);
-        if (loading) {
-            return (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <ActivityIndicator size={"large"} color={"blue"} />
 
-                </View>
-            )
-        }
+    render() {
+        const { Tables,checked1,checked2 } = this.state
+        TableData = Tables
+
+        if (checked1) {TableData = Tables.filter(function (i) { return i.size.match("Big");});}
+        if (checked2) {TableData = Tables.filter(function (i) {return i.size.match("Small");});}
+        if (checked1&&checked2) {TableData = Tables.filter(function (i) {return i});}
+
+
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
                 <View style={{ flex: 1, }}>
-                    <Header title={"Home"} />
+                    <Header title={"Resturant"} />
                 </View>
                 <View style={{ flex: 8, justifyContent: 'center', alignItems: 'center' }}>
                     <View style={{ width: '98%', flex: 1 }}>
-                        {ImageData && ImageData.length > 0 ?
-                            <FlatList
+                        <FlatList
                             showsVerticalScrollIndicator={false}
-                                data={ImageData}
-                                renderItem={this.renderItem}
-                                keyExtractor={(item, index) => index.toString()}
-                            /> : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>No Data Found</Text></View>
-                        }
+                            numColumns={2}
+
+                            data={TableData}
+                            renderItem={this.renderItem}
+                            keyExtractor={(item, index) => index.toString()}
+                        />
+                        {/* : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>No Data Found</Text></View> */}
                     </View>
                 </View>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <View style={{ width: '98%', flex: 1 }}>
+
+                        <Text style={{ fontSize: height / 40 }}>Filter table by size</Text>
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flex: 5, justifyContent: 'flex-start' }}>
+                                <CheckBox
+                                    center
+                                    title='Big'
+                                    textStyle={{ color: "grey",  }}
+                                    checkedIcon='dot-circle-o'
+                                    uncheckedIcon='circle-o'
+                                    onPress={()=>this.onPressRadio("one")}
+                                    checked={this.state.checked1}
+                                    containerStyle={{ backgroundColor: "transparent", borderWidth: 0 }}
+                                />
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flex: 5, justifyContent: 'flex-start' }}>
+                                <CheckBox
+                                    center
+                                    title='Small'
+                                    textStyle={{ color: "grey", }}
+                                    checkedIcon='dot-circle-o'
+                                    uncheckedIcon='circle-o'
+                                    onPress={()=>this.onPressRadio("two")}
+                                    checked={this.state.checked2}
+                                    containerStyle={{ backgroundColor: "transparent", borderWidth: 0 }}
+                                />
+                            </View>
+                        </View>
+
+                    </View>
+
+                </View>
+
             </SafeAreaView>
         )
     }
