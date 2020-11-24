@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Text, View,Dimensions } from 'react-native'
 const {height,width}=Dimensions.get('window')
 const HeaderIconSize = height / 30
+import { Icon } from 'react-native-elements';
 
 export default class Header extends Component {
     render() {

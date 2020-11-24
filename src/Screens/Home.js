@@ -6,21 +6,21 @@ const { width, height } = Dimensions.get("window");
 export const MinMargin = width / 40;
 export const Margin = width / 20;
 import { CheckBox } from 'react-native-elements';
-let TableData=[]
+let TableData = []
 export default class Home extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
             Tables: [
-                { table: "Table one", size: "Big", img: require("../images/big.jpg") },
-                { table: "Table Two", size: "Big", img: require("../images/big.jpg") },
-                { table: "Table three", size: "Big", img: require("../images/big.jpg") },
-                { table: "Table four", size: "Big", img: require("../images/big.jpg") },
-                { table: "Table five", size: "Small", img: require("../images/small.jpg") },
-                { table: "Table six", size: "Small", img: require("../images/small.jpg") },
-                { table: "Table seven", size: "Small", img: require("../images/small.jpg") },
-                { table: "Table eight", size: "Small", img: require("../images/small.jpg") },
+                { table: "Table one", size: "Big", img: require("../images/big.jpg"), slot: "Available", id: "1" },
+                { table: "Table Two", size: "Big", img: require("../images/big.jpg"), slot: "Available", id: "2" },
+                { table: "Table three", size: "Big", img: require("../images/big.jpg"), slot: "Available", id: "3" },
+                { table: "Table four", size: "Big", img: require("../images/big.jpg"), slot: "Available", id: "4" },
+                { table: "Table five", size: "Small", img: require("../images/small.jpg",), slot: "Available", id: "5" },
+                { table: "Table six", size: "Small", img: require("../images/small.jpg"), slot: "Available", id: "6" },
+                { table: "Table seven", size: "Small", img: require("../images/small.jpg"), slot: "Available", id: "7" },
+                { table: "Table eight", size: "Small", img: require("../images/small.jpg"), slot: "Available", id: "8" },
 
             ],
             timeArr: [
@@ -38,25 +38,62 @@ export default class Home extends Component {
             ],
             checked1: false,
             checked2: false,
+            checked3:false,
+            checked4:false
         }
     }
 
 
     onPressRadio = (type) => {
-        if (type=="one") {
-            this.setState({ checked1: !this.state.checked1,})
+        if (type == "one") {
+            this.setState({ checked1: !this.state.checked1, })
 
-        } else {
-            this.setState({  checked2: !this.state.checked2 })
+        }else  if (type == "two") {
+            this.setState({ checked2: !this.state.checked2 })
+
+        }
+        else  if (type == "three") {
+            this.setState({ checked3: !this.state.checked3 })
+
+        }
+        else {
+            this.setState({ checked4: !this.state.checked4 })
 
         }
 
     }
 
+    componentDidMount() {
+        let st = true
+        this.willFocusSubscription = this.props.navigation.addListener(
+            'focus',
+            (async () => {
+                st = false
+                this.didMountFunctions()
+            })
+        );
+        if (st) {
+            this.didMountFunctions()
+        }
+    }
 
+    didMountFunctions() {
+        const { Tables, checked1, checked2 } = this.state
+        console.log('this.props.route.params', this.props.route.params)
+        if (this.props && this.props.route && this.props.route.params&& this.props.route.params.selectedTable) {
+            let data=this.props.route.params.selectedTable
+            Tables.map((item,index) => {
+             if (item.id==data.id) {
+                Tables[index].slot="Booked"
+             }
+            })
+    
+        }
+        this.setState({Tables:Tables})
 
-    handleButtonPress(item){
-     this.props.navigation.navigate("Details")
+    }
+    handleButtonPress(item) {
+        this.props.navigation.navigate("Details", { data: item,table:this.state.Tables })
     }
 
 
@@ -71,6 +108,8 @@ export default class Home extends Component {
                         <View style={{ alignItems: 'center' }}>
                             <Text style={{ fontSize: height / 45, color: "#fff", textAlign: 'center' }}>{item.size}</Text>
                             <Text style={{ fontSize: height / 45, color: "#fff", textAlign: 'center' }}>Table No:{index + 1}</Text>
+                            <Text style={{ fontSize: height / 45, color: "#fff", textAlign: 'center' }}>{item.slot}</Text>
+
                         </View>
                     </View>
                 </ImageBackground>
@@ -81,12 +120,15 @@ export default class Home extends Component {
 
 
     render() {
-        const { Tables,checked1,checked2 } = this.state
+        const { Tables, checked1, checked2,checked3,checked4 } = this.state
         TableData = Tables
 
-        if (checked1) {TableData = Tables.filter(function (i) { return i.size.match("Big");});}
-        if (checked2) {TableData = Tables.filter(function (i) {return i.size.match("Small");});}
-        if (checked1&&checked2) {TableData = Tables.filter(function (i) {return i});}
+        if (checked1) { TableData = Tables.filter(function (i) { return i.size.match("Big"); }); }
+        if (checked2) { TableData = Tables.filter(function (i) { return i.size.match("Small"); }); }
+        if (checked3) { TableData = Tables.filter(function (i) { return i.slot.match("Booked"); }); }
+        if (checked4) { TableData = Tables.filter(function (i) { return i.slot.match("Available"); }); }
+
+        if (checked1 && checked2) { TableData = Tables.filter(function (i) { return i }); }
 
 
         return (
@@ -94,8 +136,9 @@ export default class Home extends Component {
                 <View style={{ flex: 1, }}>
                     <Header title={"Resturant"} />
                 </View>
-                <View style={{ flex: 8, justifyContent: 'center', alignItems: 'center' }}>
+                <View style={{ flex: 7, justifyContent: 'center', alignItems: 'center' }}>
                     <View style={{ width: '98%', flex: 1 }}>
+                   {TableData.length>0?
                         <FlatList
                             showsVerticalScrollIndicator={false}
                             numColumns={2}
@@ -104,22 +147,27 @@ export default class Home extends Component {
                             renderItem={this.renderItem}
                             keyExtractor={(item, index) => index.toString()}
                         />
-                        {/* : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>No Data Found</Text></View> */}
-                    </View>
+                     : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>No Data Found</Text></View> 
+                   }
+                        </View>
                 </View>
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <View style={{ flex: 1.2, justifyContent: 'center', alignItems: 'center' }}>
                     <View style={{ width: '98%', flex: 1 }}>
+                      <View style={{flex:2,}}>
+                      <Text style={{ fontSize: height / 40 }}>Filter table </Text>
 
-                        <Text style={{ fontSize: height / 40 }}>Filter table by size</Text>
-                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                      </View>
+                      <View style={{flex:8,}}>
+
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between',  }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flex: 5, justifyContent: 'flex-start' }}>
                                 <CheckBox
                                     center
                                     title='Big'
-                                    textStyle={{ color: "grey",  }}
+                                    textStyle={{ color: "grey", }}
                                     checkedIcon='dot-circle-o'
                                     uncheckedIcon='circle-o'
-                                    onPress={()=>this.onPressRadio("one")}
+                                    onPress={() => this.onPressRadio("one")}
                                     checked={this.state.checked1}
                                     containerStyle={{ backgroundColor: "transparent", borderWidth: 0 }}
                                 />
@@ -131,11 +179,38 @@ export default class Home extends Component {
                                     textStyle={{ color: "grey", }}
                                     checkedIcon='dot-circle-o'
                                     uncheckedIcon='circle-o'
-                                    onPress={()=>this.onPressRadio("two")}
+                                    onPress={() => this.onPressRadio("two")}
                                     checked={this.state.checked2}
                                     containerStyle={{ backgroundColor: "transparent", borderWidth: 0 }}
                                 />
                             </View>
+                        </View>
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flex: 5, justifyContent: 'flex-start' }}>
+                                <CheckBox
+                                    center
+                                    title='Booked'
+                                    textStyle={{ color: "grey", }}
+                                    checkedIcon='dot-circle-o'
+                                    uncheckedIcon='circle-o'
+                                    onPress={() => this.onPressRadio("three")}
+                                    checked={this.state.checked3}
+                                    containerStyle={{ backgroundColor: "transparent", borderWidth: 0 }}
+                                />
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flex: 5, justifyContent: 'flex-start' }}>
+                                <CheckBox
+                                    center
+                                    title='Available'
+                                    textStyle={{ color: "grey", }}
+                                    checkedIcon='dot-circle-o'
+                                    uncheckedIcon='circle-o'
+                                    onPress={() => this.onPressRadio("four")}
+                                    checked={this.state.checked4}
+                                    containerStyle={{ backgroundColor: "transparent", borderWidth: 0 }}
+                                />
+                            </View>
+                        </View>
                         </View>
 
                     </View>
