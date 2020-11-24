@@ -31,11 +31,6 @@ export default class Home extends Component {
                 { startTime: "7:00pm", endTime: "9:00pm" },
 
             ],
-            tableSize: [
-                { size: "Big" },
-                { size: "Small" }
-
-            ],
             checked1: false,
             checked2: false,
             checked3:false,
