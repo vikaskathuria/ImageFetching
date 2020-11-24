@@ -22,7 +22,7 @@ export default class Home extends Component {
                 { table: "Table seven", size: "Small", img: require("../images/small.jpg"), slot: "Available", id: "7" },
                 { table: "Table eight", size: "Small", img: require("../images/small.jpg"), slot: "Available", id: "8" },
 
-            ],
+            ],             
             timeArr: [
                 { startTime: "10:00am", endTime: "12:00pm" },
                 { startTime: "1:00pm", endTime: '3:00pm' },
