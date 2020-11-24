@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import { Text, View, SafeAreaView, FlatList, Dimensions, ImageBackground, TouchableOpacity } from 'react-native'
 import Header from '../Components/Header'
-const { width, height } = Dimensions.get("window");
+import Cards from '../Components/Card'
 
+const { width, height } = Dimensions.get("window");
+let arr = []
 export const MinMargin = width / 40;
 export const Margin = width / 20;
 import { CheckBox } from 'react-native-elements';
@@ -14,6 +16,8 @@ export default class Home extends Component {
         this.state = {
             cards: []
         }
+        this.createDeck()
+
     }
 
 
@@ -27,13 +31,12 @@ export default class Home extends Component {
 
     didMountFunctions() {
         const { Tables, checked1, checked2 } = this.state
-        this.createDeck()
     }
 
 
     createDeck() {
-        let arr = []
-        let suits = ['clubs', 'diamonds', 'hearts', 'spades'];
+         arr = []
+        let suits = [{suit:'clubs',name:"cards-club",type:'material-community'},{suit: 'diamonds',name:"cards-diamond",type:'material-community'}, {suit:'hearts',name:"cards-heart",type:'material-community'}, {suit:'spades',name:"cards-spade",type:'material-community'}];
         let ranks = ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king'];
         let values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
@@ -42,7 +45,8 @@ export default class Home extends Component {
                 arr.push({ suits: suits[i], ranks: ranks[j], values: values[j] });
             }
         }
-        this.setState({ cards: arr })
+        // this.setState({ cards: arr })
+        console.log(arr);
     }
 
     render() {
@@ -52,13 +56,9 @@ export default class Home extends Component {
 
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-                <View style={{ flex: 1, }}>
-                    <Header title={"Card Deck"} />
-                </View>
-                <View style={{ flex: 7, justifyContent: 'center', alignItems: 'center' }}>
-                    <View style={{ width: '98%', flex: 1 }}>
-                    </View>
-                </View>
+                        <Cards
+                        cards={arr}
+                        />
 
             </SafeAreaView>
         )
